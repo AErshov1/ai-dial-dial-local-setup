@@ -7,7 +7,22 @@
       "endpoint": "http://172.22.0.1:5022/openai/deployments/echo/chat/completions"
     }
   },
-  "models": {},
+  "models": {
+    "claude-3-7-sonnet@20250219": {
+      "displayName": "sonnet 3.7",
+      "endpoint": "http://adapter-dial:5000/openai/deployments/claude-3-7-sonnet@20250219/chat/completions",
+      "type": "chat",
+      "limits": {
+        "minute": "100"
+      }
+    },
+    "gemini-2.5-pro": {
+      "displayName": "Gemini 2.5 Pro",
+      "endpoint": "http://adapter-dial:5000/openai/deployments/gemini-2.5-pro/chat/completions",
+      "iconUrl": "http://localhost:3001/Gemini-Pro-Vision.svg",
+      "type": "chat"
+    }
+  },
   "keys": {
     "dial_api_key": {
       "project": "TEST-PROJECT",
