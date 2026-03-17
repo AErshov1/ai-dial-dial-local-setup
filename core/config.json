@@ -5,16 +5,18 @@
       "displayName": "My Echo App",
       "description": "Simple application that repeats user's message",
       "endpoint": "http://172.22.0.1:5022/openai/deployments/echo/chat/completions"
+    },
+    "essay-assistant": {
+      "displayName": "Essay Assistant",
+      "description": "Essay Assistant. Always answers with essay.",
+      "endpoint": "http://172.22.0.1:5025/openai/deployments/essay-assistant/chat/completions"
     }
   },
   "models": {
     "claude-3-7-sonnet@20250219": {
       "displayName": "sonnet 3.7",
       "endpoint": "http://adapter-dial:5000/openai/deployments/claude-3-7-sonnet@20250219/chat/completions",
-      "type": "chat",
-      "limits": {
-        "minute": "100"
-      }
+      "type": "chat"
     },
     "gemini-2.5-pro": {
       "displayName": "Gemini 2.5 Pro",

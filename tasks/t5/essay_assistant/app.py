@@ -22,11 +22,9 @@ SYSTEM_PROMPT = """You are an essay-focused assistant. Respond to every request 
 
 class EssayAssistantApplication(ChatCompletion):
 
-
     async def chat_completion(
             self, request: Request, response: Response
     ) -> None:
-        #TODO:
         # Create the AsyncDial:
         #   - `base_url="http://localhost:8080"` (we will use Core that is hosted locally)
         #   - `api_key="dial_api_key"` (why `dial_api_key` you can find it in core/config.json -> keys.
@@ -34,9 +32,12 @@ class EssayAssistantApplication(ChatCompletion):
         #       docker-compose.yml for chat service)
         #   - `api_version="2025-01-01-preview"`
 
-        client: AsyncDial = None
+        client: AsyncDial = AsyncDial(
+            base_url="http://localhost:8080",
+            api_key="dial_api_key",
+            api_version="2025-01-01-preview"
+        )
 
-        #TODO:
         # 1. Create self-closable choice where we return response (you can find this code in echo app)
         #    (you need to call `response.create_single_choice()`
         # 2. Assign to `chunks` the call to client chat completions (await client.chat.completions.create) with such parameters:
@@ -48,14 +49,31 @@ class EssayAssistantApplication(ChatCompletion):
         #   -> Get its `delta` (chunk.choices[0].delta) and assign to `delta`
         #   -> if delta is not None and has `content` (delta.content):
         #   -> Append delta content to choice (choice.append_content(delta.content))
+        last_user_message = request.messages[-1]
+        with response.create_single_choice() as choice:
+            choice.append_content(last_user_message.content or "")
+            chunks = await client.chat.completions.create(
+                deployment_name="gemini-2.5-pro",
+                stream=True,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": last_user_message.content}
+                ]
+            )
+
+            async for chunk in chunks:
+                if chunk.choices:
+                    delta = chunk.choices[0].delta
+                    if delta and delta.content:
+                        choice.append_content(delta.content)
 
 
 app: DIALApp = DIALApp()
-#TODO:
 # - add chat completion to `app`:
 #       - use method `add_chat_completion`
 #       - deployment_name is `essay-assistant`
 #       - impl is `EssayAssistantApplication()`
+app.add_chat_completion("essay-assistant", EssayAssistantApplication())
 
 
 if __name__ == "__main__":
